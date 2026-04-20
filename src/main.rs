@@ -1,6 +1,9 @@
 use std::{
     env::args, 
-    fs::canonicalize, 
+    fs::{
+        canonicalize,
+        create_dir 
+    },
     process::exit,
     path::PathBuf,
 };
@@ -8,9 +11,11 @@ use std::{
 use colored::Colorize;
 
 mod config;
+mod init;
 use config::open_config;
+use init::init_command;
 
-fn arg_parse() -> (String, PathBuf) {
+fn arg_parse() -> (String, PathBuf, usize) {
     let args: Vec<String> = args().collect();
 
     if args.len() < 2 {
@@ -30,6 +35,32 @@ fn arg_parse() -> (String, PathBuf) {
         src_path_s = &args[2];
     }
 
+    if query == "new" {
+        if args.len() < 3 {
+            eprintln!(
+                "{} {}",
+                "ERROR:".bright_red().bold(),
+                "Expected the name of a directory".bold()
+            );
+
+            exit(1);
+        }
+
+        create_dir(src_path_s).unwrap_or_else(|err| {
+            eprintln!(
+                "{} {} `{}`\n  {}",
+                "ERROR:".bright_red().bold(),
+                "Could not create directory:".bold(),
+                src_path_s,
+                err.to_string().bold()
+            );
+
+            exit(1);
+        });
+
+        init_command(src_path_s.into());
+    }
+
     let src_path = canonicalize(src_path_s).unwrap_or_else(|err| {
         eprintln!(
             "{} {} `{}`\n  {}",
@@ -39,18 +70,19 @@ fn arg_parse() -> (String, PathBuf) {
             err.to_string().bold()
         );
         
-        exit(2);
+        exit(1);
     });
 
-    println!("Building from {}", src_path.display());
-    println!("Query: {query}");
-
-    return (query.to_string(), src_path);
+    return (query.to_string(), src_path, args.len());
 }
 
 fn main() {
     // Grab parameters
-    let ( query, src_path ) = arg_parse();
+    let ( query, src_path, _nargs ) = arg_parse();
+
+    if query == "new" || query == "init" {
+        init_command(src_path);
+    }
 
     // Find and open the config file
     let config = open_config(&src_path).unwrap_or_else(|err| {
@@ -65,6 +97,6 @@ fn main() {
             err.to_string().bold()
         );
 
-        exit(2);
+        exit(1);
     });
 }

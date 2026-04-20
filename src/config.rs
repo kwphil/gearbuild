@@ -3,14 +3,14 @@ use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct GeneralConfig {
-    _name: String,
-    _version: String,
-    _gear: String
+    name: String,
+    version: String,
+    gear: String
 }
 
 #[derive(Deserialize)]
 pub struct Config {
-    _general: GeneralConfig,
+    general: GeneralConfig,
 }
 
 pub fn open_config(src_path: &PathBuf) -> Result<Config, Box<dyn std::error::Error>> {

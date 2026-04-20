@@ -3,10 +3,11 @@ name = "hello-world"
 exec_name = "hello"
 version = "0.1.0"
 
-[gear]
+[build]
 location = "./gear" # Won't be required after a proper install script 
 version = "0.1.0"
 
+[compiler]
 opt-level = "O1"
 warnings = "all"
 debug-sym = true
