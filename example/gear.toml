@@ -1,0 +1,33 @@
+[general]
+name = "hello-world"
+exec_name = "hello"
+version = "0.1.0"
+
+[gear]
+location = "./gear" # Won't be required after a proper install script 
+version = "0.1.0"
+
+opt-level = "O1"
+warnings = "all"
+debug-sym = true
+
+# Would create two binaries
+# hello-x86_64-linux-gnu
+# hello-aarch64-linux-gnu
+targets = [ "x86_64-linux-gnu", "aarch64-linux-gnu" ] # Allow to compile for multiple
+
+[c_lang]
+location = "c_lang/"
+backend = "make"
+
+# Would default to [ make setup, make all, make install ], definining manually for clarity
+
+setup = "$./setup" # $ indicates NOT to use make command
+build = "all" 
+install = "install"
+
+[cxx_lang]
+location = "cxx"
+backend = "cmake"
+
+variables = [ "ABORT_ERROR=ON" ]
